@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useState } from "react";
+import type { FilterData } from "./Filter";
 
 interface RocketLaunchData {
   countLaunches: number;
@@ -15,7 +16,9 @@ const dummyData: RocketLaunchData[] = [
   { countLaunches: 2, moonphase: 4, countSuccessLaunches: 1 },
 ];
 
-function Graphic(): JSX.Element {
+function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
+  // In a real application, you would fetch data based on year and rocketType
+  // and setDataOfRocketLaunches accordingly.
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
     RocketLaunchData[]
   >([dummyData[0], dummyData[1], dummyData[2], dummyData[3]]);

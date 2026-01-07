@@ -7,7 +7,6 @@ function MainWindow(): JSX.Element {
   return (
     <div>
       <Filter />
-      <Graphic />
       <SummaryText />
     </div>
   );

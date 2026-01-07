@@ -1,8 +1,19 @@
 import { useState, type JSX } from "react";
+import Graphic from "./Graphic";
+
+export interface FilterData {
+  year?: string;
+  rocketType?: string;
+}
 
 function Filter(): JSX.Element {
-  const [selectedYear, setSelectedYear] = useState<string>("");
-  const [selectedRocketType, setSelectedRocketType] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState<string>("2020");
+  const [selectedRocketType, setSelectedRocketType] = useState<string>("Type1");
+
+  const filterDataToBeSendToBackend: FilterData = {
+    year: selectedYear,
+    rocketType: selectedRocketType,
+  };
 
   return (
     <div>
@@ -49,15 +60,7 @@ function Filter(): JSX.Element {
       >
         {" "}
       </div>
-      <button
-        style={{
-          marginTop: 10,
-          marginBottom: 10,
-          margin: 5,
-        }}
-      >
-        Aktualisieren
-      </button>
+      <Graphic filterDaten={filterDataToBeSendToBackend} />
     </div>
   );
 }
