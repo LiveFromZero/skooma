@@ -24,12 +24,7 @@ function Graphic(): JSX.Element {
     <div>
       <h2>Graphic Component</h2>
       <BarChart
-        xAxis={[
-          {
-            id: "barCategories",
-            data: ["Neumond", "Viertelmond", "Halbmond", "Vollmond"],
-          },
-        ]}
+        xAxis={[{ data: ["Neumond", "Viertelmond", "Halbmond", "Vollmond"] }]}
         series={[
           {
             data: [
@@ -39,6 +34,15 @@ function Graphic(): JSX.Element {
               dataOfRocketLaunches[3].countLaunches,
             ],
             label: "Anzahl Starts",
+          },
+          {
+            data: [
+              dataOfRocketLaunches[0].countSuccessLaunches,
+              dataOfRocketLaunches[1].countSuccessLaunches,
+              dataOfRocketLaunches[2].countSuccessLaunches,
+              dataOfRocketLaunches[3].countSuccessLaunches,
+            ],
+            label: "Erfolgreiche Starts",
           },
         ]}
         height={300}
