@@ -1,0 +1,6 @@
+@skooma_backend_HostAddress = http://localhost:5212
+
+GET {{skooma_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
