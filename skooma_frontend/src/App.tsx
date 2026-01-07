@@ -1,5 +1,4 @@
 import type { JSX } from "react";
-import "./App.css";
 import MainWindow from "./MainWindow";
 
 function App(): JSX.Element {
