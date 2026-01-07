@@ -1,9 +1,14 @@
 import type { JSX } from "react";
+import Filter from "./Filter";
+import Graphic from "./Graphic";
+import SummaryText from "./SummaryText";
 
 function MainWindow(): JSX.Element {
   return (
     <div>
-      <h1>Main Window</h1>
+      <Filter />
+      <Graphic />
+      <SummaryText />
     </div>
   );
 }
