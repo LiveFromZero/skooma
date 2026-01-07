@@ -21,7 +21,14 @@ function Filter(): JSX.Element {
           <option value="2025">2025</option>
         </select>
       </label>
-
+      <span
+        style={{
+          paddingLeft: 10,
+          paddingRight: 10,
+        }}
+      >
+        {" "}
+      </span>
       <label>
         Raketentyp:
         <select
@@ -34,6 +41,23 @@ function Filter(): JSX.Element {
           <option value="Type3">Type3</option>
         </select>
       </label>
+      <div
+        style={{
+          paddingLeft: 10,
+          paddingRight: 10,
+        }}
+      >
+        {" "}
+      </div>
+      <button
+        style={{
+          marginTop: 10,
+          marginBottom: 10,
+          margin: 5,
+        }}
+      >
+        Aktualisieren
+      </button>
     </div>
   );
 }

@@ -22,8 +22,9 @@ function Graphic(): JSX.Element {
 
   return (
     <div>
-      <h2>Graphic Component</h2>
+      <h2>Statistik</h2>
       <BarChart
+        sx={{ alignSelf: "flex-start" }}
         xAxis={[{ data: ["Neumond", "Viertelmond", "Halbmond", "Vollmond"] }]}
         series={[
           {
@@ -46,6 +47,7 @@ function Graphic(): JSX.Element {
           },
         ]}
         height={300}
+        width={1000}
       />
     </div>
   );
