@@ -12,7 +12,7 @@ namespace skooma_backend.Controllers
         // später würde man dann "3,7,12,1,0" aus der Datenbank holen mit vorgefertigten Queries,
         // das hier ist aber erstmal eine Beispiel-API-Anfrage vom Frontend
         [HttpGet("/GetCountOfRocketStartsForMoonPhase")]
-        public IActionResult Get([FromQuery] int phase)
+        public IActionResult GetCountOfRocketStarts([FromQuery] int phase)
         {
             if (phase < 1 || phase > 4)
                 return BadRequest("phase muss zwischen 1 und 4 liegen");
@@ -25,6 +25,32 @@ namespace skooma_backend.Controllers
                 4 => 1,
                 _ => 0
             };
+
+            return Ok(result);
+        }
+
+        [HttpGet("/GetCountOfSuccessfullRocketStartsForMoonPhase")]
+        public IActionResult GetCountOfSuccessfullRocketstarts([FromQuery] int phase)
+        {
+            if (phase < 1 || phase > 4)
+                return BadRequest("phase muss zwischen 1 und 4 liegen");
+
+            int result = phase switch
+            {
+                1 => 3,
+                2 => 7,
+                3 => 12,
+                4 => 1,
+                _ => 0
+            };
+
+            return Ok(result);
+        }
+
+        [HttpGet("/GetAverageSuccessStartPercentage")]
+        public IActionResult GetAverageForSuccessfullStarts() // kein Parameter, da keine Mondphase notwendig
+        {
+            double result = 75.8; // das dann später aus Datenbank ziehen, ist hier nur placeholder
 
             return Ok(result);
         }
