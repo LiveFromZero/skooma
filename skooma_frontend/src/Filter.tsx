@@ -1,9 +1,10 @@
 import { useState, type JSX } from "react";
-import Graphic from "./Graphic";
+import Graphic from "./filterDependantComponents/Graphic";
+import SummaryText from "./filterDependantComponents/SummaryText";
 
 export interface FilterData {
-  year?: string;
-  rocketType?: string;
+  year: string;
+  rocketType: string;
 }
 
 function Filter(): JSX.Element {
@@ -61,6 +62,7 @@ function Filter(): JSX.Element {
         {" "}
       </div>
       <Graphic filterDaten={filterDataToBeSendToBackend} />
+      <SummaryText selectedYear={filterDataToBeSendToBackend.year} />
     </div>
   );
 }

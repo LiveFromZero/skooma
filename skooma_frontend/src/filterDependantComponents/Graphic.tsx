@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
-import type { FilterData } from "./Filter";
+import type { FilterData } from "../Filter";
 
 interface RocketLaunchData {
   countLaunches: number;
