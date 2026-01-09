@@ -9,13 +9,10 @@ const spanStyle: React.CSSProperties = {
 };
 
 function Filter(): JSX.Element {
-  const [selectedYear, setSelectedYear] = useState<string>("2020");
-  const [selectedRocketType, setSelectedRocketType] = useState<string>("Type1");
-
-  const filterDataToBeSendToBackend: FilterData = {
-    year: selectedYear,
-    rocketType: selectedRocketType,
-  };
+  const [dynamicFilterData, setDynamicFilterData] = useState<FilterData>({
+    year: "2020",
+    rocketType: "Type1",
+  });
 
   return (
     <div>
@@ -23,8 +20,10 @@ function Filter(): JSX.Element {
         Jahr:
         <select
           name="selectedYear"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
+          value={dynamicFilterData.year}
+          onChange={(e) =>
+            setDynamicFilterData({ ...dynamicFilterData, year: e.target.value })
+          }
         >
           <option value="2020">2020</option>
           <option value="2021">2021</option>
@@ -39,8 +38,13 @@ function Filter(): JSX.Element {
         Raketentyp:
         <select
           name="selectedRocketType"
-          value={selectedRocketType}
-          onChange={(e) => setSelectedRocketType(e.target.value)}
+          value={dynamicFilterData.rocketType}
+          onChange={(e) =>
+            setDynamicFilterData({
+              ...dynamicFilterData,
+              rocketType: e.target.value,
+            })
+          }
         >
           <option value="Type1">Type1</option>
           <option value="Type2">Type2</option>
@@ -48,8 +52,8 @@ function Filter(): JSX.Element {
         </select>
       </label>
       <div style={spanStyle}> </div>
-      <Graphic filterDaten={filterDataToBeSendToBackend} />
-      <SummaryText selectedYear={filterDataToBeSendToBackend.year} />
+      <Graphic filterDaten={dynamicFilterData} />
+      <SummaryText selectedYear={dynamicFilterData.year} />
     </div>
   );
 }
