@@ -1,11 +1,7 @@
 import { useState, type JSX } from "react";
 import Graphic from "./filterDependantComponents/Graphic";
 import SummaryText from "./filterDependantComponents/SummaryText";
-
-export interface FilterData {
-  year: string;
-  rocketType: string;
-}
+import type { FilterData } from "./types";
 
 const spanStyle: React.CSSProperties = {
   paddingLeft: 10,

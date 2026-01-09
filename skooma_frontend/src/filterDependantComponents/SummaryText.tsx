@@ -1,9 +1,5 @@
 import { useEffect, useState, type JSX } from "react";
-
-interface SummaryTextData {
-  selectedYear?: string;
-  averagePercent?: number;
-}
+import type { SummaryTextData } from "../types";
 
 const dummyTextData: SummaryTextData = {
   selectedYear: "2024",

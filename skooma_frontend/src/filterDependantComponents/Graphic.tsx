@@ -1,13 +1,8 @@
 import type { JSX } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
-import type { FilterData } from "../Filter";
-
-interface RocketLaunchData {
-  countLaunches: number;
-  moonphase: number;
-  countSuccessLaunches: number;
-}
+import type { FilterData } from "../types";
+import type { RocketLaunchData } from "../types";
 
 const dummyData: RocketLaunchData[] = [
   { countLaunches: 5, moonphase: 1, countSuccessLaunches: 4 },
