@@ -1,4 +1,4 @@
-# Projektname
+# Skooma
 
 Dieses Projekt besteht aus einem **Frontend** und einem **Backend**.
 
