@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import MainWindow from "./MainWindow";
+import Filter from "./Filter";
 
 const divStyle: React.CSSProperties = {
   padding: 30,
@@ -12,7 +12,7 @@ function App(): JSX.Element {
   return (
     <div style={divStyle}>
       <h1>Skooma</h1>
-      <MainWindow />
+      <Filter />
     </div>
   );
 }
