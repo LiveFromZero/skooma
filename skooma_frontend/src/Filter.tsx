@@ -1,8 +1,8 @@
 import { useState, type JSX } from "react";
 import Graphic from "./filterDependantComponents/Graphic";
-import SummaryText from "./filterDependantComponents/SummaryText";
 import type { FilterData } from "./types";
 import type { FilterSelectProps } from "./types";
+import SummaryTextForGivenYear from "./filterDependantComponents/SummaryTextForGivenYear";
 
 const spanStyle: React.CSSProperties = {
   paddingLeft: 10,
@@ -70,7 +70,7 @@ function Filter(): JSX.Element {
         }
       />
       <Graphic filterDaten={dynamicFilterData} />
-      <SummaryText selectedYear={dynamicFilterData.year} />
+      <SummaryTextForGivenYear selectedYear={dynamicFilterData.year} />
     </div>
   );
 }

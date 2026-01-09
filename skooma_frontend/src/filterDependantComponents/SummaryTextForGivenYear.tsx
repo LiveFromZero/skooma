@@ -1,7 +1,11 @@
 import { useEffect, useState, type JSX } from "react";
 import { dummyAllAveragePercentage } from "../mock";
 
-function SummaryText({ selectedYear }: { selectedYear: string }): JSX.Element {
+function SummaryTextForGivenYear({
+  selectedYear,
+}: {
+  selectedYear: string;
+}): JSX.Element {
   const [allAveragePercent, setAllAveragePercent] = useState<number>();
 
   useEffect(() => {
@@ -26,4 +30,4 @@ function SummaryText({ selectedYear }: { selectedYear: string }): JSX.Element {
   );
 }
 
-export default SummaryText;
+export default SummaryTextForGivenYear;
