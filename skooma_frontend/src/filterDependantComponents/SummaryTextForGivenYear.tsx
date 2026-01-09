@@ -6,7 +6,7 @@ function SummaryTextForGivenYear({
 }: {
   selectedYear: string;
 }): JSX.Element {
-  const [allAveragePercent, setAllAveragePercent] = useState<number>();
+  const [allAveragePercent, setAllAveragePercent] = useState<number>(0);
 
   useEffect(() => {
     fetchDataFromBackend(selectedYear);

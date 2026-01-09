@@ -27,29 +27,42 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
     }
   }
 
+  const moonLabels = dataOfRocketLaunches.map((item) => {
+    const phases: Record<number, string> = {
+      1: "Neumond",
+      2: "Viertel",
+      3: "Halb",
+      4: "Voll",
+    };
+    return phases[item.moonphase] || "Unbekannt";
+  });
+
+  const seriesDataAllLaunches: number[] = dataOfRocketLaunches.map(
+    (item) => item.countLaunches
+  );
+
+  const seriesDataSuccessfulLaunches: number[] = dataOfRocketLaunches.map(
+    (item) => item.countSuccessLaunches
+  );
+
   return (
     <div>
       <h2>Statistik</h2>
       <BarChart
         sx={{ alignSelf: "flex-start" }}
-        xAxis={[{ data: ["Neumond", "Viertelmond", "Halbmond", "Vollmond"] }]}
+        xAxis={[
+          {
+            scaleType: "band",
+            data: moonLabels,
+          },
+        ]}
         series={[
           {
-            data: [
-              dataOfRocketLaunches[0].countLaunches,
-              dataOfRocketLaunches[1].countLaunches,
-              dataOfRocketLaunches[2].countLaunches,
-              dataOfRocketLaunches[3].countLaunches,
-            ],
+            data: seriesDataAllLaunches,
             label: "Anzahl Starts",
           },
           {
-            data: [
-              dataOfRocketLaunches[0].countSuccessLaunches,
-              dataOfRocketLaunches[1].countSuccessLaunches,
-              dataOfRocketLaunches[2].countSuccessLaunches,
-              dataOfRocketLaunches[3].countSuccessLaunches,
-            ],
+            data: seriesDataSuccessfulLaunches,
             label: "Erfolgreiche Starts",
           },
         ]}
