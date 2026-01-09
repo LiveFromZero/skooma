@@ -7,6 +7,11 @@ export interface FilterData {
   rocketType: string;
 }
 
+const spanStyle: React.CSSProperties = {
+  paddingLeft: 10,
+  paddingRight: 10,
+};
+
 function Filter(): JSX.Element {
   const [selectedYear, setSelectedYear] = useState<string>("2020");
   const [selectedRocketType, setSelectedRocketType] = useState<string>("Type1");
@@ -33,14 +38,7 @@ function Filter(): JSX.Element {
           <option value="2025">2025</option>
         </select>
       </label>
-      <span
-        style={{
-          paddingLeft: 10,
-          paddingRight: 10,
-        }}
-      >
-        {" "}
-      </span>
+      <span style={spanStyle}> </span>
       <label>
         Raketentyp:
         <select
@@ -53,14 +51,7 @@ function Filter(): JSX.Element {
           <option value="Type3">Type3</option>
         </select>
       </label>
-      <div
-        style={{
-          paddingLeft: 10,
-          paddingRight: 10,
-        }}
-      >
-        {" "}
-      </div>
+      <div style={spanStyle}> </div>
       <Graphic filterDaten={filterDataToBeSendToBackend} />
       <SummaryText selectedYear={filterDataToBeSendToBackend.year} />
     </div>
