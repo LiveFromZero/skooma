@@ -1,13 +1,8 @@
 import { useEffect, useState, type JSX } from "react";
-import type { SummaryTextData } from "../types";
 
-const dummyTextData: SummaryTextData = {
-  selectedYear: "2024",
-  averagePercent: 75.6,
-};
+const dummyData: number = 76.5;
 
 function SummaryText({ selectedYear }: { selectedYear: string }): JSX.Element {
-  const [chosenYear, setChosenYear] = useState<string>();
   const [allAveragePercent, setAllAveragePercent] = useState<number>();
 
   useEffect(() => {
@@ -20,17 +15,16 @@ function SummaryText({ selectedYear }: { selectedYear: string }): JSX.Element {
     if (selectedYear) {
       // Here you would normally fetch data from the backend using selectedYear
       // setting the fetched data to state
-      var fetchedData: SummaryTextData = dummyTextData; // in production, replace with fetched data
+      var fetchedData: number = dummyData; // in production, replace with fetched data
       // here is the information from the backend set to refresh the summary text
-      setChosenYear(fetchedData.selectedYear);
-      setAllAveragePercent(fetchedData.averagePercent);
+      setAllAveragePercent(fetchedData);
     }
   }
 
   return (
     <div>
       <p>
-        Im Jahr {chosenYear} waren durchschnittlich {allAveragePercent}% aller
+        Im Jahr {selectedYear} waren durchschnittlich {allAveragePercent}% aller
         Rakenestarts erfolgreich.
       </p>
     </div>

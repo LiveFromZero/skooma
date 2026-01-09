@@ -3,13 +3,15 @@ export interface FilterData {
   rocketType: string;
 }
 
-export interface SummaryTextData {
-  selectedYear?: string;
-  averagePercent?: number;
-}
-
 export interface RocketLaunchData {
   countLaunches: number;
   moonphase: number;
   countSuccessLaunches: number;
+}
+
+export interface FilterSelectProps {
+  label: string;
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: Function;
 }

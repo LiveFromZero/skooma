@@ -2,56 +2,73 @@ import { useState, type JSX } from "react";
 import Graphic from "./filterDependantComponents/Graphic";
 import SummaryText from "./filterDependantComponents/SummaryText";
 import type { FilterData } from "./types";
+import type { FilterSelectProps } from "./types";
 
 const spanStyle: React.CSSProperties = {
   paddingLeft: 10,
   paddingRight: 10,
 };
 
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: FilterSelectProps): JSX.Element {
+  return (
+    <div>
+      <label>{label}</label>
+      <select value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function Filter(): JSX.Element {
   const [dynamicFilterData, setDynamicFilterData] = useState<FilterData>({
     year: "2020",
-    rocketType: "Type1",
+    rocketType: "Type0",
   });
+
+  const YEAR_OPTIONS = [
+    { value: "2020", label: "2020" },
+    { value: "2021", label: "2021" },
+    { value: "2022", label: "2022" },
+    { value: "2023", label: "2023" },
+    { value: "2024", label: "2024" },
+  ];
+
+  const ROCKET_OPTIONS = [
+    { value: "Type0", label: "Alle Typen" },
+    { value: "Type1", label: "Type 1" },
+    { value: "Type2", label: "Type 2" },
+    { value: "Type3", label: "Type 3" },
+  ];
 
   return (
     <div>
-      <label>
-        Jahr:
-        <select
-          name="selectedYear"
-          value={dynamicFilterData.year}
-          onChange={(e) =>
-            setDynamicFilterData({ ...dynamicFilterData, year: e.target.value })
-          }
-        >
-          <option value="2020">2020</option>
-          <option value="2021">2021</option>
-          <option value="2022">2022</option>
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-        </select>
-      </label>
-      <span style={spanStyle}> </span>
-      <label>
-        Raketentyp:
-        <select
-          name="selectedRocketType"
-          value={dynamicFilterData.rocketType}
-          onChange={(e) =>
-            setDynamicFilterData({
-              ...dynamicFilterData,
-              rocketType: e.target.value,
-            })
-          }
-        >
-          <option value="Type1">Type1</option>
-          <option value="Type2">Type2</option>
-          <option value="Type3">Type3</option>
-        </select>
-      </label>
-      <div style={spanStyle}> </div>
+      <FilterSelect
+        label="Startjahr wählen:"
+        value={dynamicFilterData.year}
+        options={YEAR_OPTIONS}
+        onChange={(value: string) =>
+          setDynamicFilterData({ ...dynamicFilterData, year: value })
+        }
+      />
+      <span style={spanStyle} />
+      <FilterSelect
+        label="Raketentyp wählen:"
+        value={dynamicFilterData.rocketType}
+        options={ROCKET_OPTIONS}
+        onChange={(value: string) =>
+          setDynamicFilterData({ ...dynamicFilterData, rocketType: value })
+        }
+      />
       <Graphic filterDaten={dynamicFilterData} />
       <SummaryText selectedYear={dynamicFilterData.year} />
     </div>
