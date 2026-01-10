@@ -9,10 +9,10 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
     RocketLaunchData[]
   >([
-    { countLaunches: 0, moonphase: 1, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 2, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 3, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 4, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 1, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 2, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 3, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 4, countSuccessLaunches: 0 },
   ]);
 
   useEffect(() => {
@@ -36,11 +36,11 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   const moonLabels = dataOfRocketLaunches.map((item) => {
     const phases: Record<number, string> = {
       1: "Neumond",
-      2: "Viertel",
-      3: "Halb",
-      4: "Voll",
+      2: "Viertelmond",
+      3: "Halbmond",
+      4: "Vollmond",
     };
-    return phases[item.moonphase] || "Unbekannt";
+    return phases[item.moonPhase] || "Unbekannt";
   });
 
   const seriesDataAllLaunches: number[] = dataOfRocketLaunches.map(
