@@ -1,5 +1,5 @@
 import { useEffect, useState, type JSX } from "react";
-const VITE_API_URL_BACKEND = import.meta.env.VITE_API_URL_BACKEND;
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
 function SummaryTextForGivenYear({
   selectedYear,
@@ -14,7 +14,7 @@ function SummaryTextForGivenYear({
 
   async function fetchDataFromBackend(selectedYear: string): Promise<void> {
     const response = await fetch(
-      `${VITE_API_URL_BACKEND}/rocket-starts?year=` + selectedYear
+      `${API_URL}/rocket-starts?year=` + selectedYear
     );
     console.log("Response status:", response.status);
     const data = await response.json();
