@@ -17,7 +17,7 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
 
   useEffect(() => {
     fetchData(filterDaten);
-  }, []);
+  }, [filterDaten.year, filterDaten.rocketType]);
 
   async function fetchData(filterDaten: FilterData): Promise<void> {
     const response = await fetch(

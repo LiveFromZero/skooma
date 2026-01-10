@@ -10,7 +10,7 @@ function SummaryTextForGivenYear({
 
   useEffect(() => {
     fetchDataFromBackend(selectedYear);
-  }, []);
+  }, [selectedYear]);
 
   async function fetchDataFromBackend(selectedYear: string): Promise<void> {
     const response = await fetch(
