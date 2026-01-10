@@ -22,7 +22,7 @@ namespace skooma_backend.Controllers
 
         // GET /rocket-starts/success-rate
         [HttpGet("rocketlaunchdata")]
-        public IActionResult GetRocketLaunchData()
+        public IActionResult GetRocketLaunchData(string year, string rocketType)
         {
             // TODO START
             // THIS is DUMMYDATA for API Call with frontend, needs to be changed to data from models and database
