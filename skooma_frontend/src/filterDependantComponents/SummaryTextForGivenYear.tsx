@@ -12,12 +12,15 @@ function SummaryTextForGivenYear({
     fetchDataFromBackend(selectedYear);
   }, []);
 
-  function fetchDataFromBackend(selectedYear: string): void {
-    if (selectedYear) {
-      // fetch data from backend based on selected year
-      var fetchedData: number = dummyAllAveragePercentage; // TODO Replace with fetch data
-      setAllAveragePercent(fetchedData);
-    }
+  async function fetchDataFromBackend(selectedYear: string): Promise<void> {
+    const response = await fetch(
+      "http://localhost:5212/rocket-starts?year=" + selectedYear
+    );
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: number = data;
+    setAllAveragePercent(fetchedData);
   }
 
   return (
