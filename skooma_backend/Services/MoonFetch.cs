@@ -21,7 +21,7 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
             var phases = data.GetProperty("phasedata").EnumerateArray()
                 .Select(phase => new MoonData
                 {
-                    PhaseName = phase.GetProperty("phase").GetString() ?? string.Empty,
+                    Phase = MapPhaseStringToEnum(phase.GetProperty("phase").GetString() ?? string.Empty),
                     Date = new DateTime(
                         phase.GetProperty("year").GetInt32(),
                         phase.GetProperty("month").GetInt32(),
@@ -67,11 +67,11 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
 
             var moonPhase = new MoonData
             {
-                PhaseName = properties.GetProperty("curphase").GetString() ?? string.Empty,
+                Phase = MapPhaseStringToEnum(properties.GetProperty("curphase").GetString() ?? string.Empty),
                 Date = date
             };
 
-            logger.LogInformation("Successfully fetched moon phase: {PhaseName}", moonPhase.PhaseName);
+            logger.LogInformation("Successfully fetched moon phase: {PhaseName}", moonPhase.Phase.ToString());
             return moonPhase;
         }
         catch (HttpRequestException ex)
@@ -98,9 +98,24 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
         // Placeholder for database saving logic
         foreach (var data in moonData)
         {
-            logger.LogInformation("Saving moon data to database: {PhaseName} on {Date}", data.PhaseName, data.Date);
+            logger.LogInformation("Saving moon data to database: {PhaseName} on {Date}", data.Phase.ToString(), data.Date);
         }
         
             
+    }
+
+    private MoonPhase MapPhaseStringToEnum(string phase)
+    {
+        // Normalize input
+        var normalized = phase.Trim().ToLowerInvariant();
+
+        return normalized switch
+        {
+            "new" or "new moon" or "neumond" => MoonPhase.Neumond,
+            "first" or "first quarter" or "first quarter" or "zunehmender halbmond" or "zunehmender_halbmond" => MoonPhase.ZunehmenderHalbmond,
+            "full" or "full moon" or "vollmond" => MoonPhase.Vollmond,
+            "last" or "last quarter" or "last quarter" or "waning half" or "abnehmender halbmond" or "abnehmender_halbmond" => MoonPhase.AbnehmenderHalbmond,
+            _ => MoonPhase.Neumond
+        };
     }
 }

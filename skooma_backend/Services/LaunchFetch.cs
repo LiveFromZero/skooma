@@ -34,7 +34,7 @@ public class LaunchFetch(HttpClient httpClient, ILogger<LaunchFetch> logger)
                         RocketName =
                             launch.GetProperty("rocket").GetProperty("configuration").GetProperty("name").GetString() ??
                             string.Empty,
-                        Date = launch.GetProperty("net").GetDateTimeOffset(),
+                        LaunchDate = launch.GetProperty("net").GetDateTimeOffset(),
                         Location = new Location
                         {
                             Id = launch.GetProperty("pad").GetProperty("location").GetProperty("id").GetInt32(),

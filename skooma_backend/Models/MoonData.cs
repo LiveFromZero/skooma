@@ -2,6 +2,7 @@
 
 public class MoonData
 {
-    public string PhaseName { get; set; } = string.Empty;
+    public MoonPhase Phase { get; set; } = MoonPhase.Neumond;
     public DateTime Date { get; set; }
+    
 }
