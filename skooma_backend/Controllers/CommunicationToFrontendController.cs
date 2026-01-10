@@ -26,14 +26,15 @@ namespace skooma_backend.Controllers
         {
             // TODO START
             // THIS is DUMMYDATA for API Call with frontend, needs to be changed to data from models and database
-            
-            var backendDataToSendBack = new List<RocketLaunchStats>
+
+            var backendDataToSendBack = new[]
             {
-                new RocketLaunchStats { CountLaunches = 10, MoonPhase = 1, CountSuccessLaunches = 1 },
-                new RocketLaunchStats { CountLaunches = 10, MoonPhase = 2, CountSuccessLaunches = 1 },
-                new RocketLaunchStats { CountLaunches = 15, MoonPhase = 3, CountSuccessLaunches = 1 },
-                new RocketLaunchStats { CountLaunches = 15, MoonPhase = 4, CountSuccessLaunches = 1 }
+            new { CountLaunches = 10, MoonPhase = 1, CountSuccessLaunches = 1 },
+            new { CountLaunches = 10, MoonPhase = 2, CountSuccessLaunches = 1 },
+            new { CountLaunches = 15, MoonPhase = 3, CountSuccessLaunches = 1 },
+            new { CountLaunches = 15, MoonPhase = 4, CountSuccessLaunches = 1 }
             };
+
 
             var result = backendDataToSendBack; // needs to be adjustet when connected with backend
             // TODO END
@@ -42,14 +43,4 @@ namespace skooma_backend.Controllers
         }
 
     }
-
-    // TODO This is a DUMMY-MODEL for API Calls with the frontend
-    // DELETE and use real model when connected to Database
-    public class RocketLaunchStats
-    {
-        public int CountLaunches { get; set; }
-        public int MoonPhase { get; set; }
-        public int CountSuccessLaunches { get; set; }
-    }
-
 }
