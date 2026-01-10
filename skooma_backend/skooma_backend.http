@@ -1,6 +1,9 @@
 @skooma_backend_HostAddress = http://localhost:5212
 
-GET {{skooma_backend_HostAddress}}/weatherforecast/
+GET {{skooma_backend_HostAddress}}/api/chart?type=successRate&year=2023
 Accept: application/json
 
 ###
+
+GET {{skooma_backend_HostAddress}}/api/chart/types
+Accept: application/json
