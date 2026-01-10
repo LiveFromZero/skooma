@@ -20,7 +20,7 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
 
   async function fetchData(filterDaten: FilterData): Promise<void> {
     const response = await fetch(
-      "http://localhost:5212/rocket-starts/rocketlaunchdata?year=" +
+      "http://localhost:5000/rocket-starts/rocketlaunchdata?year=" +
         filterDaten.year +
         "&rocketType=" +
         filterDaten.rocketType

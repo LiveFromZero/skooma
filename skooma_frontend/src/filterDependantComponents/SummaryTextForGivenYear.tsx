@@ -13,7 +13,7 @@ function SummaryTextForGivenYear({
 
   async function fetchDataFromBackend(selectedYear: string): Promise<void> {
     const response = await fetch(
-      "http://localhost:5212/rocket-starts?year=" + selectedYear
+      "http://localhost:5000/rocket-starts?year=" + selectedYear
     );
     console.log("Response status:", response.status);
     const data = await response.json();
