@@ -19,10 +19,15 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
     fetchData(filterDaten);
   }, []);
 
-  function fetchData(filterDaten: FilterData): void {
+  async function fetchData(filterDaten: FilterData): Promise<void> {
     if (filterDaten) {
-      // fetch data from backend
-      var fetchedData: RocketLaunchData[] = dummyRocketLaunchData; // TODO replace with fetch data
+      const response = await fetch(
+        "http://localhost:5212/rocket-starts/rocketlaunchdata"
+      );
+      console.log("Response status:", response.status);
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      var fetchedData: RocketLaunchData[] = data;
       setDataOfRocketLaunches(fetchedData);
     }
   }
