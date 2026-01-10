@@ -13,7 +13,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins("http://localhost:5212")
+            //for testing with "run dev" in vite: http://localhost:5173
+            /// for using within visual studio/with backend: http://localhost:5212
+            /// for production/before building: http://localhost:5000
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

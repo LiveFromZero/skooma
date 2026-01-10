@@ -20,7 +20,6 @@ namespace skooma_backend.Controllers
         }
 
 
-        // GET /rocket-starts/success-rate
         [HttpGet("rocketlaunchdata")]
         public IActionResult GetRocketLaunchData(string year, string rocketType)
         {
