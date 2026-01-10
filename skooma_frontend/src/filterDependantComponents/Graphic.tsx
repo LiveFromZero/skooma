@@ -20,16 +20,17 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   }, []);
 
   async function fetchData(filterDaten: FilterData): Promise<void> {
-    if (filterDaten) {
-      const response = await fetch(
-        "http://localhost:5212/rocket-starts/rocketlaunchdata"
-      );
-      console.log("Response status:", response.status);
-      const data = await response.json();
-      console.log("Fetched data:", data);
-      var fetchedData: RocketLaunchData[] = data;
-      setDataOfRocketLaunches(fetchedData);
-    }
+    const response = await fetch(
+      "http://localhost:5212/rocket-starts/rocketlaunchdata?year=" +
+        filterDaten.year +
+        "&rocketType=" +
+        filterDaten.rocketType
+    );
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: RocketLaunchData[] = data;
+    setDataOfRocketLaunches(fetchedData);
   }
 
   const moonLabels = dataOfRocketLaunches.map((item) => {
