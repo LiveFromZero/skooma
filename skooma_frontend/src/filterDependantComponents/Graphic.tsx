@@ -3,7 +3,6 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
 import type { FilterData } from "../types";
 import type { RocketLaunchData } from "../types";
-import { dummyRocketLaunchData } from "../mock";
 
 function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<

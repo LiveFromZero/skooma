@@ -1,5 +1,4 @@
 import { useEffect, useState, type JSX } from "react";
-import { dummyAllAveragePercentage } from "../mock";
 
 function SummaryTextForGivenYear({
   selectedYear,
