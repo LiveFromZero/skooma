@@ -3,6 +3,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
 import type { FilterData } from "../types";
 import type { RocketLaunchData } from "../types";
+const VITE_API_URL_BACKEND = import.meta.env.VITE_API_URL_BACKEND;
 
 function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
@@ -20,7 +21,7 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
 
   async function fetchData(filterDaten: FilterData): Promise<void> {
     const response = await fetch(
-      "http://localhost:5000/rocket-starts/rocketlaunchdata?year=" +
+      `${VITE_API_URL_BACKEND}/rocket-starts/rocketlaunchdata?year=` +
         filterDaten.year +
         "&rocketType=" +
         filterDaten.rocketType
