@@ -16,17 +16,28 @@ public class ChartController(AnalysisCalculator analysisService, CacheService ca
     {
         try
         {
-            // Cache-Key generieren
+            // Validate query parameters
+            if (string.IsNullOrEmpty(type))
+            {
+                return BadRequest(new { error = "The 'type' query parameter is required." });
+            }
+
+            if (year <= 0)
+            {
+                return BadRequest(new { error = "The 'year' query parameter must be a positive integer." });
+            }
+
+            // Cache-Key generation
             string cacheKey = $"{type}_{year}";
 
-            // 1. Cache prüfen
+            // 1. Check cache
             var cachedData = await cacheService.GetCachedDataAsync(cacheKey);
             if (cachedData != null)
             {
-                return Ok(cachedData); // 200 OK mit Cache-Daten
+                return Ok(cachedData); // 200 OK with cached data
             }
 
-            // 2. Daten berechnen (falls nicht gecacht)
+            // 2. Calculate data (if not cached)
             object chartData = type switch
             {
                 "successRate" => await analysisService.CalculateSuccessRateByMoonPhaseAsync(year),
@@ -36,18 +47,18 @@ public class ChartController(AnalysisCalculator analysisService, CacheService ca
 
             if (chartData == null)
             {
-                return BadRequest(new { error = "Invalid chart type" }); // 400 Bad Request
+                return BadRequest(new { error = "Invalid chart type. Supported types are 'successRate' and 'launchesPerMonth'." });
             }
 
-            // 3. In Cache speichern
+            // 3. Save to cache
             await cacheService.SaveToCacheAsync(cacheKey, chartData);
 
-            // 4. Daten zurückgeben
+            // 4. Return data
             return Ok(chartData); // 200 OK
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = ex.Message }); // 500 Internal Server Error
+            return StatusCode(500, new { error = "An unexpected error occurred. Please try again later. " + ex.Message }); // 500 Internal Server Error
         }
     }
 

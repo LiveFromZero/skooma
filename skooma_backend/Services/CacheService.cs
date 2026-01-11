@@ -1,15 +1,32 @@
-﻿namespace skooma_backend.Services;
+﻿using Microsoft.Extensions.Caching.Memory;
+
+namespace skooma_backend.Services;
 
 public class CacheService
 {
-    public async Task<object?> GetCachedDataAsync(string cacheKey)
+    private readonly IMemoryCache _memoryCache;
+
+    public CacheService(IMemoryCache memoryCache)
     {
-        throw new NotImplementedException();
+        _memoryCache = memoryCache;
     }
 
-    public async Task SaveToCacheAsync(string cacheKey, object chartData)
+    public async Task<object?> GetCachedDataAsync(string cacheKey)
     {
-        
-        throw new NotImplementedException();
+        // Simulate async operation
+        return await Task.FromResult(_memoryCache.TryGetValue(cacheKey, out var cachedData) ? cachedData : null);
+    }
+
+    public async Task SaveToCacheAsync(string cacheKey, object chartData, TimeSpan? expirationTime = null)
+    {
+        // Simulate async operation
+        await Task.Run(() =>
+        {
+            var cacheEntryOptions = new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = expirationTime ?? TimeSpan.FromMinutes(30)
+            };
+            _memoryCache.Set(cacheKey, chartData, cacheEntryOptions);
+        });
     }
 }

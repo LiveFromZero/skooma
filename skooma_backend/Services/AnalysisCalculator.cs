@@ -1,13 +1,20 @@
 ﻿using skooma_backend.Models;
 using skooma_backend.Models.Responses;
 using skooma_backend.Models.Analysis;
+using Microsoft.EntityFrameworkCore;
 
 namespace skooma_backend.Services;
 
-public class AnalysisCalculator()
+public class AnalysisCalculator
 {
-    // Todo implement database context injection
-    // private readonly DatabaseContext _db = db;
+    private readonly DbContext _db;
+
+    public AnalysisCalculator(DbContext db)
+    {
+        _db = db;
+    }
+
+    private const string LaunchStatusSuccess = "Success";
 
     /// <summary>
     /// Berechnet die Erfolgsrate von Raketenstarts gruppiert nach Mondphasen für ein bestimmtes Jahr.
@@ -32,10 +39,10 @@ public class AnalysisCalculator()
             {
                 MoonPhase = g.Key.ToString(),
                 TotalLaunches = g.Count(),
-                SuccessfulLaunches = g.Count(x => x.Launch.Status == "Success"),
-                FailedLaunches = g.Count(x => x.Launch.Status != "Success"),
+                SuccessfulLaunches = g.Count(x => x.Launch.Status == LaunchStatusSuccess),
+                FailedLaunches = g.Count(x => x.Launch.Status != LaunchStatusSuccess),
                 SuccessRate = Math.Round(
-                    (double)g.Count(x => x.Launch.Status == "Success") / g.Count() * 100,
+                    (double)g.Count(x => x.Launch.Status == LaunchStatusSuccess) / g.Count() * 100,
                     2
                 )
             })
@@ -75,10 +82,10 @@ public class AnalysisCalculator()
                 Month = g.Key,
                 MonthName = new DateOnly(year, g.Key, 1).ToString("MMMM"),
                 TotalLaunches = g.Count(),
-                SuccessfulLaunches = g.Count(l => l.Status == "Success"),
-                FailedLaunches = g.Count(l => l.Status != "Success"),
+                SuccessfulLaunches = g.Count(l => l.Status == LaunchStatusSuccess),
+                FailedLaunches = g.Count(l => l.Status != LaunchStatusSuccess),
                 SuccessRate = Math.Round(
-                    (double)g.Count(l => l.Status == "Success") / g.Count() * 100,
+                    (double)g.Count(l => l.Status == LaunchStatusSuccess) / g.Count() * 100,
                     2
                 )
             })
@@ -94,10 +101,10 @@ public class AnalysisCalculator()
             Summary = new LaunchesPerMonthSummary
             {
                 TotalLaunches = launches.Count,
-                TotalSuccessful = launches.Count(l => l.Status == "Success"),
-                TotalFailed = launches.Count(l => l.Status != "Success"),
+                TotalSuccessful = launches.Count(l => l.Status == LaunchStatusSuccess),
+                TotalFailed = launches.Count(l => l.Status != LaunchStatusSuccess),
                 OverallSuccessRate = launches.Count > 0
-                    ? Math.Round((double)launches.Count(l => l.Status == "Success") / launches.Count * 100, 2)
+                    ? Math.Round((double)launches.Count(l => l.Status == LaunchStatusSuccess) / launches.Count * 100, 2)
                     : 0
             }
         };
@@ -111,25 +118,23 @@ public class AnalysisCalculator()
     /// <returns>Liste von Launch-Objekten</returns>
     private async Task<List<Launch>> QueryLaunchesAsync(int year)
     {
-        // TODO: Implementieren
-        // Diese Methode soll alle Launches für das angegebene Jahr aus der Datenbank holen
-        // Optional: Include Location für zusätzliche Informationen
-        throw new NotImplementedException();
-        // Beispiel-Implementierung:
-        // return await _db.Launches
-        //     .Include(l => l.Location) // Optional: Location-Daten mit laden
-        //     .Where(l => l.LaunchDate.Year == year)
-        //     .ToListAsync();
+        // Diese Methode holt alle Launches für das angegebene Jahr aus der Datenbank
+        return await _db.Set<Launch>()
+            .Include(l => l.Location) // Optional: Location-Daten mit laden
+            .Where(l => l.LaunchDate.Year == year)
+            .ToListAsync();
     }
-    
+
+    /// <summary>
+    /// Holt alle Mondphasen-Daten für ein bestimmtes Jahr aus der Datenbank.
+    /// </summary>
+    /// <param name="year"></param>
+    /// <returns>Liste von MoonData-Objekten</returns>
     private async Task<List<MoonData>> QueryMoonDataAsync(int year)
     {
-        // TODO: Implement moon data querying logic
-        throw new NotImplementedException();
-        // return _db.MoonData
-        //     .Where(m => m.Date.Year == year)
-        //     .ToListAsync();
-        return new List<MoonData>();
+        // Diese Methode holt alle Mondphasen-Daten für das angegebene Jahr aus der Datenbank
+        return await _db.Set<MoonData>()
+            .ToListAsync();
     }
 
     /// <summary>
@@ -183,10 +188,10 @@ public class AnalysisCalculator()
         {
             Year = year,
             TotalLaunches = launches.Count,
-            SuccessfulLaunches = launches.Count(l => l.Status == "Success"),
-            FailedLaunches = launches.Count(l => l.Status != "Success"),
+            SuccessfulLaunches = launches.Count(l => l.Status == LaunchStatusSuccess),
+            FailedLaunches = launches.Count(l => l.Status != LaunchStatusSuccess),
             OverallSuccessRate = launches.Count > 0
-                ? Math.Round((double)launches.Count(l => l.Status == "Success") / launches.Count * 100, 2)
+                ? Math.Round((double)launches.Count(l => l.Status == LaunchStatusSuccess) / launches.Count * 100, 2)
                 : 0,
             LaunchesWithMoonData = launchesWithMoon.Count,
             UniqueLocations = launches.Select(l => l.Location.CountryName).Distinct().Count(),
