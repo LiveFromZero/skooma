@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using skooma_backend.Data;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,13 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddScoped<AppDbContext>();
+
 
 var app = builder.Build();
 var url = "http://localhost:5000";
@@ -36,10 +45,14 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     Process.Start(new ProcessStartInfo
     {
-        // für Veröffentlichung http://localhost:5000, fürs Testen https://localhost:7101
+        // fï¿½r Verï¿½ffentlichung http://localhost:5000, fï¿½rs Testen https://localhost:7101
         FileName = url,
         UseShellExecute = true
     });
 });
+
+
+using var scope = app.Services.CreateScope();
+
 
 app.Run();

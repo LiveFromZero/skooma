@@ -9,10 +9,10 @@ namespace skooma_backend.Data
         public DbSet<DBLocation> Locations => Set<DBLocation>();
         public DbSet<DBLaunch> Launches => Set<DBLaunch>();
         public  DbSet<DBMoonData> MoonData => Set<DBMoonData>();
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            optionsBuilder.UseSqlite("Data Source=library.db");
         }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
