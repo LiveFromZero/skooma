@@ -3,38 +3,44 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
 import type { FilterData } from "../types";
 import type { RocketLaunchData } from "../types";
-import { dummyRocketLaunchData } from "../mock";
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
 function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
     RocketLaunchData[]
   >([
-    { countLaunches: 0, moonphase: 1, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 2, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 3, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonphase: 4, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 1, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 2, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 3, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 4, countSuccessLaunches: 0 },
   ]);
 
   useEffect(() => {
     fetchData(filterDaten);
-  }, []);
+  }, [filterDaten.year, filterDaten.rocketType]);
 
-  function fetchData(filterDaten: FilterData): void {
-    if (filterDaten) {
-      // fetch data from backend
-      var fetchedData: RocketLaunchData[] = dummyRocketLaunchData; // TODO replace with fetch data
-      setDataOfRocketLaunches(fetchedData);
-    }
+  async function fetchData(filterDaten: FilterData): Promise<void> {
+    const response = await fetch(
+      `${API_URL}/rocket-starts/rocketlaunchdata?year=` +
+        filterDaten.year +
+        "&rocketType=" +
+        filterDaten.rocketType
+    );
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: RocketLaunchData[] = data;
+    setDataOfRocketLaunches(fetchedData);
   }
 
   const moonLabels = dataOfRocketLaunches.map((item) => {
     const phases: Record<number, string> = {
       1: "Neumond",
-      2: "Viertel",
-      3: "Halb",
-      4: "Voll",
+      2: "Viertelmond",
+      3: "Halbmond",
+      4: "Vollmond",
     };
-    return phases[item.moonphase] || "Unbekannt";
+    return phases[item.moonPhase] || "Unbekannt";
   });
 
   const seriesDataAllLaunches: number[] = dataOfRocketLaunches.map(

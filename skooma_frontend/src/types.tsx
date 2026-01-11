@@ -5,7 +5,7 @@ export interface FilterData {
 
 export interface RocketLaunchData {
   countLaunches: number;
-  moonphase: number;
+  moonPhase: number;
   countSuccessLaunches: number;
 }
 
