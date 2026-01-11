@@ -1,6 +1,6 @@
 @skooma_backend_HostAddress = http://localhost:5212
 
-GET {{skooma_backend_HostAddress}}/weatherforecast/
+GET {{skooma_backend_HostAddress}}/rocket-starts
 Accept: application/json
 
 ###
