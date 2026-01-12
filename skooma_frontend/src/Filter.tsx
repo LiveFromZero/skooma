@@ -3,6 +3,8 @@ import Graphic from "./filterDependantComponents/Graphic";
 import type { FilterData } from "./types";
 import type { FilterSelectProps } from "./types";
 import SummaryTextForGivenYear from "./filterDependantComponents/SummaryTextForGivenYear";
+import { useEffect } from "react";
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
 const spanStyle: React.CSSProperties = {
   paddingLeft: 10,
@@ -34,6 +36,19 @@ function Filter(): JSX.Element {
     year: "2020",
     rocketType: "Type0",
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function fetchData(): Promise<void> {
+    const response = await fetch(`${API_URL}/rocket-starts/rocketfilterdata`);
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: FilterData = data;
+    setDynamicFilterData(fetchedData);
+  }
 
   const YEAR_OPTIONS = [
     { value: "2020", label: "2020" },
