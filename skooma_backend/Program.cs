@@ -10,11 +10,15 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString));
 
-builder.Services.AddControllers();
+builder.Services.AddHttpClient<MoonFetch>();
+builder.Services.AddHttpClient<LaunchFetch>();
+
 builder.Services.AddScoped<AnalysisCalculator>();
 builder.Services.AddScoped<CacheService>();
 builder.Services.AddScoped<MoonFetch>();
 builder.Services.AddScoped<LaunchFetch>();
+
+builder.Services.AddControllers();
 builder.Services.AddMemoryCache(); // Register IMemoryCache service
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -40,6 +44,7 @@ using (var scope = app.Services.CreateScope())
         {
             new Launch
             {
+                Id = Guid.NewGuid().ToString(),
                 LaunchDate = new DateTime(2025, 1, 15),
                 Status = "Success",
                 Location = new Location { CountryName = "USA"},
@@ -47,6 +52,7 @@ using (var scope = app.Services.CreateScope())
             },
             new Launch
             {
+                Id = Guid.NewGuid().ToString(),
                 LaunchDate = new DateTime(2025, 2, 20),
                 Status = "Failure",
                 Location = new Location { CountryName = "Russia"},
@@ -54,6 +60,7 @@ using (var scope = app.Services.CreateScope())
             },
             new Launch
             {
+                Id = Guid.NewGuid().ToString(),
                 LaunchDate = new DateTime(2025, 3, 10),
                 Status = "Success",
                 Location = new Location { CountryName = "China"},
@@ -66,9 +73,9 @@ using (var scope = app.Services.CreateScope())
     {
         dbContext.MoonData.AddRange(new[]
         {
-            new MoonData { Date = new DateTime(2025, 1, 15), Phase = MoonPhase.Vollmond },
-            new MoonData { Date = new DateTime(2025, 2, 20), Phase = MoonPhase.Neumond },
-            new MoonData { Date = new DateTime(2025, 3, 10), Phase = MoonPhase.ZunehmenderHalbmond }
+            new MoonData {Id = Guid.NewGuid().ToString(), Date = new DateTime(2025, 1, 15), Phase = MoonPhase.Vollmond },
+            new MoonData {Id = Guid.NewGuid().ToString(), Date = new DateTime(2025, 2, 20), Phase = MoonPhase.Neumond },
+            new MoonData {Id = Guid.NewGuid().ToString(), Date = new DateTime(2025, 3, 10), Phase = MoonPhase.ZunehmenderHalbmond }
         });
     }
 

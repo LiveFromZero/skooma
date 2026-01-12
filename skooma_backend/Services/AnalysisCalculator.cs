@@ -2,14 +2,15 @@
 using skooma_backend.Models.Responses;
 using skooma_backend.Models.Analysis;
 using Microsoft.EntityFrameworkCore;
+using skooma_backend.Data;
 
 namespace skooma_backend.Services;
 
 public class AnalysisCalculator
 {
-    private readonly DbContext _db;
+    private readonly AppDbContext _db;
 
-    public AnalysisCalculator(DbContext db)
+    public AnalysisCalculator(AppDbContext db)
     {
         _db = db;
     }
