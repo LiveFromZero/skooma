@@ -1,9 +1,14 @@
 @skooma_backend_HostAddress = http://localhost:5212
 
-GET {{skooma_backend_HostAddress}}/api/chart?type=successRate&year=2023
+GET {{skooma_backend_HostAddress}}/api/chart
 Accept: application/json
 
 ###
 
 GET {{skooma_backend_HostAddress}}/api/chart/types
+Accept: application/json
+
+###
+
+GET {{skooma_backend_HostAddress}}/rocket-starts
 Accept: application/json
