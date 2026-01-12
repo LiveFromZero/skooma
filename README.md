@@ -105,3 +105,13 @@ Datenbankenprojekt.
    Dadurch starten **Backend und Frontend** gemeinsam.
 
 6. Um wieder in die dev-Umgebung zu wechseln und das frontend wieder mit dem backend kommunizieren zu lassen,wieder den Schritten aus Build für die dev-Umgebung folgen
+
+### Vite mit dev-backend kommunizieren lassen
+
+1. In Visual Studio in der `Program.cs` die Frontend-Policy ändern auf:
+
+   - http://localhost:5173
+
+2. Den Backend-client in der dev-Umgebung starten (optional alles aus wwwroot vorher löschen) und den startenden frontend-server ignorieren oder wegklicken
+
+3. Zum Frontend wechseln und dort `npm run dev` ausführen
