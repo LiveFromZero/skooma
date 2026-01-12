@@ -27,6 +27,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-wwwroot/*
-!wwwroot/index.html
 
