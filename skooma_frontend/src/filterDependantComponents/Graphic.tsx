@@ -1,72 +1,74 @@
 import type { JSX } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
-import type { FilterData } from "../Filter";
-
-interface RocketLaunchData {
-  countLaunches: number;
-  moonphase: number;
-  countSuccessLaunches: number;
-}
-
-const dummyData: RocketLaunchData[] = [
-  { countLaunches: 5, moonphase: 1, countSuccessLaunches: 4 },
-  { countLaunches: 3, moonphase: 2, countSuccessLaunches: 2 },
-  { countLaunches: 7, moonphase: 3, countSuccessLaunches: 6 },
-  { countLaunches: 2, moonphase: 4, countSuccessLaunches: 1 },
-];
+import type { FilterData } from "../types";
+import type { RocketLaunchData } from "../types";
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
 function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
-  // In a real application, you would fetch data based on year and rocketType
-  // and setDataOfRocketLaunches accordingly.
   const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
     RocketLaunchData[]
-  >([dummyData[0], dummyData[1], dummyData[2], dummyData[3]]);
+  >([
+    { countLaunches: 0, moonPhase: 1, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 2, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 3, countSuccessLaunches: 0 },
+    { countLaunches: 0, moonPhase: 4, countSuccessLaunches: 0 },
+  ]);
 
   useEffect(() => {
     fetchData(filterDaten);
-  }, []);
+  }, [filterDaten.year, filterDaten.rocketType]);
 
-  function fetchData(filterDaten: FilterData): RocketLaunchData[] {
-    // Simulate data fetching based on filters
-    // filterDaten get send as parameters to backend in real application
-
-    // Dummy implementation:
-    if (!filterDaten.year && !filterDaten.rocketType) {
-      return dataOfRocketLaunches;
-    } else {
-      // Here you would normally fetch data from the backend using filterDaten
-      // setting the fetched data to state
-      var fetchedData: RocketLaunchData[] = dummyData; // in production, replace with fetched data
-      // here is the information from the backend set to refresh the graphic
-      setDataOfRocketLaunches(fetchedData);
-      return fetchedData;
-    }
+  async function fetchData(filterDaten: FilterData): Promise<void> {
+    const response = await fetch(
+      `${API_URL}/rocket-starts/rocketlaunchdata?year=` +
+        filterDaten.year +
+        "&rocketType=" +
+        filterDaten.rocketType
+    );
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: RocketLaunchData[] = data;
+    setDataOfRocketLaunches(fetchedData);
   }
+
+  const moonLabels = dataOfRocketLaunches.map((item) => {
+    const phases: Record<number, string> = {
+      1: "Neumond",
+      2: "Viertelmond",
+      3: "Halbmond",
+      4: "Vollmond",
+    };
+    return phases[item.moonPhase] || "Unbekannt";
+  });
+
+  const seriesDataAllLaunches: number[] = dataOfRocketLaunches.map(
+    (item) => item.countLaunches
+  );
+
+  const seriesDataSuccessfulLaunches: number[] = dataOfRocketLaunches.map(
+    (item) => item.countSuccessLaunches
+  );
 
   return (
     <div>
       <h2>Statistik</h2>
       <BarChart
         sx={{ alignSelf: "flex-start" }}
-        xAxis={[{ data: ["Neumond", "Viertelmond", "Halbmond", "Vollmond"] }]}
+        xAxis={[
+          {
+            scaleType: "band",
+            data: moonLabels,
+          },
+        ]}
         series={[
           {
-            data: [
-              dataOfRocketLaunches[0].countLaunches,
-              dataOfRocketLaunches[1].countLaunches,
-              dataOfRocketLaunches[2].countLaunches,
-              dataOfRocketLaunches[3].countLaunches,
-            ],
+            data: seriesDataAllLaunches,
             label: "Anzahl Starts",
           },
           {
-            data: [
-              dataOfRocketLaunches[0].countSuccessLaunches,
-              dataOfRocketLaunches[1].countSuccessLaunches,
-              dataOfRocketLaunches[2].countSuccessLaunches,
-              dataOfRocketLaunches[3].countSuccessLaunches,
-            ],
+            data: seriesDataSuccessfulLaunches,
             label: "Erfolgreiche Starts",
           },
         ]}

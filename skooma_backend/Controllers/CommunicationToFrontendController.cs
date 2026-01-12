@@ -3,54 +3,43 @@
 namespace skooma_backend.Controllers
 {
     [ApiController]
-    [Route("rocket-starts")] //zeigt den basis zweig aus dem url-tree -> /rocket-starts/(alle Optionen hier)
+    [Route("rocket-starts")]
     public class CommunicationToFrontendController : ControllerBase
     {
-        // das Get und das jeweils dahinter ist der API-Call und dann die URL, bei welcher reagiert wird
-
-        // GET /rocket-starts?phase=2
         [HttpGet]
-        public IActionResult GetRocketStarts(int phase)
+        public IActionResult GetAvgSuccessfullRocketStarts(string year)
         {
-            if (phase < 1 || phase > 4)
-                return BadRequest("phase muss zwischen 1 und 4 liegen");
+            // TODO START
+            // THIS is DUMMYDATA for API Call with frontend, needs to be changed to data from models and database
+            double BackendDataToSendBack = 30.2;
 
-            int result = GetRocketStartCount(phase);
+            double result = BackendDataToSendBack; // needs to be adjustet when connected with backend
 
+            // TODO END
             return Ok(result);
         }
 
-        // GET /rocket-starts/successful?phase=2
-        [HttpGet("successful")]
-        public IActionResult GetSuccessfulRocketStarts(int phase)
+
+        [HttpGet("rocketlaunchdata")]
+        public IActionResult GetRocketLaunchData(string year, string rocketType)
         {
-            if (phase < 1 || phase > 4)
-                return BadRequest("phase muss zwischen 1 und 4 liegen");
+            // TODO START
+            // THIS is DUMMYDATA for API Call with frontend, needs to be changed to data from models and database
 
-            int result = GetRocketStartCount(phase);
-
-            return Ok(result);
-        }
-
-        // GET /rocket-starts/success-rate
-        [HttpGet("success-rate")]
-        public IActionResult GetAverageSuccessRate()
-        {
-            double result = 75.8; // Platzhalter, später DB
-
-            return Ok(result);
-        }
-
-        private static int GetRocketStartCount(int phase) // hier platzhalter, später DB
-        {
-            return phase switch
+            var backendDataToSendBack = new[]
             {
-                1 => 3,
-                2 => 7,
-                3 => 12,
-                4 => 1,
-                _ => 0
+            new { CountLaunches = 10, MoonPhase = 1, CountSuccessLaunches = 1 },
+            new { CountLaunches = 10, MoonPhase = 2, CountSuccessLaunches = 1 },
+            new { CountLaunches = 15, MoonPhase = 3, CountSuccessLaunches = 1 },
+            new { CountLaunches = 15, MoonPhase = 4, CountSuccessLaunches = 1 }
             };
+
+
+            var result = backendDataToSendBack; // needs to be adjustet when connected with backend
+            // TODO END
+
+            return Ok(result);
         }
+
     }
 }
