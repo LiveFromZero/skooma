@@ -65,15 +65,15 @@ function Filter(): JSX.Element {
   async function updateDatabase(): Promise<void> {
     const response = await fetch(`${API_URL}/rocket-starts/updateBackend`, {});
     console.log("Response status:", response.status);
-    const data = await response.json();
-    console.log("Fetched data:", data);
     alert("Datenbank wurde aktualisiert!");
     window.location.reload();
   }
 
   return (
     <div>
-      <button onClick={() => updateDatabase()}>Update Database</button>
+      <div>
+        <button onClick={() => updateDatabase()}>Update Database</button>
+      </div>
       <span style={spanStyle} />
       <FilterSelect
         label="Startjahr wählen:"
