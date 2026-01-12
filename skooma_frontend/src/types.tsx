@@ -15,3 +15,13 @@ export interface FilterSelectProps {
   options: Array<{ value: string; label: string }>;
   onChange: Function;
 }
+
+export interface Option {
+  value: string;
+  label: string;
+}
+
+export interface DynamicFilterType {
+  yearOptions: Option[];
+  rocketTypeOptions: Option[];
+}
