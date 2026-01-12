@@ -118,9 +118,9 @@ public class AnalysisCalculator
     /// <param name="year">Das Jahr für die Abfrage</param>
     /// <returns>Liste von Launch-Objekten</returns>
     private async Task<List<Launch>> QueryLaunchesAsync(int year)
-    {
+    {   
         // Diese Methode holt alle Launches für das angegebene Jahr aus der Datenbank
-        return await _db.Set<Launch>()
+        return await _db.Launches
             .Include(l => l.Location) // Optional: Location-Daten mit laden
             .Where(l => l.LaunchDate.Year == year)
             .ToListAsync();
@@ -134,7 +134,8 @@ public class AnalysisCalculator
     private async Task<List<MoonData>> QueryMoonDataAsync(int year)
     {
         // Diese Methode holt alle Mondphasen-Daten für das angegebene Jahr aus der Datenbank
-        return await _db.Set<MoonData>()
+        return await _db.MoonData
+            .Where(m => m.Date.Year == year)
             .ToListAsync();
     }
 
