@@ -62,8 +62,19 @@ function Filter(): JSX.Element {
     setDynamicFilterOptions(fetchedData);
   }
 
+  async function updateDatabase(): Promise<void> {
+    const response = await fetch(`${API_URL}/rocket-starts/updateBackend`, {});
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    alert("Datenbank wurde aktualisiert!");
+    window.location.reload();
+  }
+
   return (
     <div>
+      <button onClick={() => updateDatabase()}>Update Database</button>
+      <span style={spanStyle} />
       <FilterSelect
         label="Startjahr wählen:"
         value={dynamicFilterData.year}
