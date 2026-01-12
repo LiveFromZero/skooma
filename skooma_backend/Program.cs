@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using skooma_backend.Data;
+using skooma_backend.Data.DBServices;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddScoped<AppDbContext>();
+builder.Services.AddScoped<LocationService>();
+builder.Services.AddScoped<LaunchService>();
+builder.Services.AddScoped<MoonDataService>();
 
 // CORS f�rs Frontend
 builder.Services.AddCors(options =>
