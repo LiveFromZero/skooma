@@ -5,11 +5,18 @@ using skooma_backend.Models;
 
 namespace skooma_backend.Services;
 
-    public class DBUpdateService
+public class DBUpdateService
 {
     private readonly LaunchFetch _launchFetch;
     private readonly MoonFetch _moonFetch;
     private readonly MoonDataService _moonDB;
+
+    public DBUpdateService(LaunchFetch launchFetch, MoonFetch moonFetch, MoonDataService moonDB)
+    {
+        _launchFetch = launchFetch;
+        _moonFetch = moonFetch;
+        _moonDB = moonDB;
+    }
     
     public async Task UpdateAllDataAsync()
     {

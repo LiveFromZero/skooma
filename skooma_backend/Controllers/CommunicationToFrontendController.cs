@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using skooma_backend.Services;
 using System.Reflection.Emit;
 
 namespace skooma_backend.Controllers
@@ -7,6 +8,13 @@ namespace skooma_backend.Controllers
     [Route("rocket-starts")]
     public class CommunicationToFrontendController : ControllerBase
     {
+        private readonly DBUpdateService _dbUpdater;
+
+        public CommunicationToFrontendController(DBUpdateService dbUpdater)
+        {
+            _dbUpdater = dbUpdater;
+        }
+
         [HttpGet]
         public IActionResult GetAvgSuccessfullRocketStarts(string year)
         {
@@ -75,8 +83,9 @@ namespace skooma_backend.Controllers
         }
 
         [HttpGet("updateBackend")]
-        public IActionResult UpdateBackendAndDatabase()
+        public async Task<IActionResult> UpdateBackendAndDatabase()
         {
+            await _dbUpdater.UpdateAllDataAsync();
             // TODO
             // Add function that starts updating the backend, making api calls to the 3rd party etc.
             // essentially everything that updates the results above

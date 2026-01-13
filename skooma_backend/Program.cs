@@ -19,8 +19,8 @@ builder.Services.AddScoped<AppDbContext>();
 builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<LaunchService>();
 builder.Services.AddScoped<MoonDataService>();
-builder.Services.AddScoped<LaunchFetch>();
-builder.Services.AddScoped<MoonFetch>();
+builder.Services.AddHttpClient<LaunchFetch>();
+builder.Services.AddHttpClient<MoonFetch>();
 builder.Services.AddScoped<DBUpdateService>();
 
 // CORS f�rs Frontend
