@@ -9,10 +9,20 @@ namespace skooma_backend.Services;
 public class AnalysisCalculator
 {
     private readonly AppDbContext _db;
+    private readonly LaunchFetch _launchFetch;
+    private readonly MoonFetch _moonFetch;
+    private readonly ILogger<AnalysisCalculator> _logger;
 
-    public AnalysisCalculator(AppDbContext db)
+    public AnalysisCalculator(
+        AppDbContext db, 
+        LaunchFetch launchFetch, 
+        MoonFetch moonFetch,
+        ILogger<AnalysisCalculator> logger)
     {
         _db = db;
+        _launchFetch = launchFetch;
+        _moonFetch = moonFetch;
+        _logger = logger;
     }
 
     private const string LaunchStatusSuccess = "Success";
@@ -24,6 +34,9 @@ public class AnalysisCalculator
     /// <returns>SuccessRateByMoonPhaseResponse mit gruppierter Erfolgsrate</returns>
     public async Task<SuccessRateByMoonPhaseResponse> CalculateSuccessRateByMoonPhaseAsync(int year)
     {
+        // Stelle sicher, dass Daten für das Jahr vorhanden sind
+        await EnsureDataExistsForYearAsync(year);
+
         // 1. Hole alle Launches für das Jahr
         var launches = await QueryLaunchesAsync(year);
 
@@ -72,6 +85,9 @@ public class AnalysisCalculator
     /// <returns>LaunchesPerMonthResponse mit monatlicher Statistik</returns>
     public async Task<LaunchesPerMonthResponse> CalculateLaunchesPerMonthAsync(int year)
     {
+        // Stelle sicher, dass Daten für das Jahr vorhanden sind
+        await EnsureDataExistsForYearAsync(year);
+
         // 1. Hole alle Launches für das Jahr
         var launches = await QueryLaunchesAsync(year);
 
@@ -112,6 +128,56 @@ public class AnalysisCalculator
     }
 
     /// <summary>
+    /// Stellt sicher, dass Daten für ein bestimmtes Jahr in der Datenbank vorhanden sind.
+    /// Falls nicht, werden sie automatisch gefetched.
+    /// </summary>
+    /// <param name="year">Das Jahr für die Datenprüfung</param>
+    private async Task EnsureDataExistsForYearAsync(int year)
+    {
+        var launchCount = await _db.Launches
+            .FromSql($"SELECT * FROM Launches WHERE strftime('%Y', LaunchDate) = {year.ToString()}")
+            .CountAsync();
+        var moonCount = await _db.MoonData
+            .FromSql($"SELECT * FROM MoonData WHERE strftime('%Y', MoonDate) = {year.ToString()}")
+            .CountAsync();
+
+        if (launchCount == 0 || moonCount == 0)
+        {
+            _logger.LogInformation("No data found for year {Year}. Fetching from APIs...", year);
+
+            // Fetch Launches
+            if (launchCount == 0)
+            {
+                var launches = await _launchFetch.GetLaunchesByYearAsync(year);
+                if (launches.Any())
+                {
+                    _db.Launches.AddRange(launches);
+                    _logger.LogInformation("Fetched {Count} launches for year {Year}", launches.Count, year);
+                }
+            }
+
+            // Fetch Moon Data
+            if (moonCount == 0)
+            {
+                var moonData = await _moonFetch.GetMoonPhasesForYearAsync(year);
+                if (moonData.Any())
+                {
+                    // Generiere IDs für MoonData
+                    for (int i = 0; i < moonData.Count; i++)
+                    {
+                        moonData[i].Id = $"moon-{year}-{i:D3}";
+                    }
+                    _db.MoonData.AddRange(moonData);
+                    _logger.LogInformation("Fetched {Count} moon phases for year {Year}", moonData.Count, year);
+                }
+            }
+
+            await _db.SaveChangesAsync();
+            _logger.LogInformation("Successfully saved data for year {Year}", year);
+        }
+    }
+
+    /// <summary>
     /// Holt alle Launches für ein bestimmtes Jahr aus der Datenbank.
     /// Inkludiert auch die Location-Daten (optional).
     /// </summary>
@@ -121,8 +187,8 @@ public class AnalysisCalculator
     {   
         // Diese Methode holt alle Launches für das angegebene Jahr aus der Datenbank
         return await _db.Launches
-            .Include(l => l.Location) // Optional: Location-Daten mit laden
-            .Where(l => l.LaunchDate.Year == year)
+            .FromSql($"SELECT * FROM Launches WHERE strftime('%Y', LaunchDate) = {year.ToString()}")
+            .Include(l => l.Location)
             .ToListAsync();
     }
 
@@ -135,7 +201,7 @@ public class AnalysisCalculator
     {
         // Diese Methode holt alle Mondphasen-Daten für das angegebene Jahr aus der Datenbank
         return await _db.MoonData
-            .Where(m => m.Date.Year == year)
+            .FromSql($"SELECT * FROM MoonData WHERE strftime('%Y', MoonDate) = {year.ToString()}")
             .ToListAsync();
     }
 
@@ -151,10 +217,12 @@ public class AnalysisCalculator
 
         foreach (var launch in launches)
         {
-            // Finde die Mondphase für das Launch-Datum (nur Datum, keine Uhrzeit)
-            var moon = moonData.FirstOrDefault(m => m.Date.Date == launch.LaunchDate.Date);
+            // Finde die letzte Mondphase VOR oder AM Launch-Datum
+            var moon = moonData
+                .Where(m => m.MoonDate.Date <= launch.LaunchDate.Date)
+                .OrderByDescending(m => m.MoonDate)
+                .FirstOrDefault();
 
-            // Nur hinzufügen wenn Mondphase gefunden wurde
             if (moon != null)
             {   
                 result.Add(new LaunchWithMoonPhase
@@ -176,6 +244,9 @@ public class AnalysisCalculator
     /// <returns>YearSummaryResponse mit allen wichtigen Kennzahlen</returns>
     public async Task<YearSummaryResponse> GetYearSummaryAsync(int year)
     {
+        // Stelle sicher, dass Daten für das Jahr vorhanden sind
+        await EnsureDataExistsForYearAsync(year);
+
         var launches = await QueryLaunchesAsync(year);
         var moonData = await QueryMoonDataAsync(year);
         var launchesWithMoon = JoinWithMoonPhases(launches, moonData);
@@ -200,6 +271,4 @@ public class AnalysisCalculator
             MostActiveMonth = mostActiveMonth
         };
     }
-
-
 }

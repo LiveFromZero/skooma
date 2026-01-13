@@ -1,4 +1,5 @@
-﻿using skooma_backend.Services;
+﻿using skooma_backend.Models.Responses;
+using skooma_backend.Services;
 
 namespace skooma_backend.Controllers;
 
@@ -38,7 +39,7 @@ public class ChartController(AnalysisCalculator analysisService, CacheService ca
             }
 
             // 2. Calculate data (if not cached)
-            object chartData = type switch
+            object? chartData = type switch
             {
                 "successRate" => await analysisService.CalculateSuccessRateByMoonPhaseAsync(year),
                 "launchesPerMonth" => await analysisService.CalculateLaunchesPerMonthAsync(year),
@@ -61,6 +62,42 @@ public class ChartController(AnalysisCalculator analysisService, CacheService ca
             return StatusCode(500, new { error = "An unexpected error occurred. Please try again later. " + ex.Message }); // 500 Internal Server Error
         }
     }
+    
+    // GET: api/chart/summary?year=2023
+    [HttpGet("summary")]
+    public async Task<IActionResult> GetYearSummary([FromQuery] int year)
+    {
+        try
+        {
+            if (year <= 0)
+            {
+                return BadRequest(new { error = "The 'year' query parameter must be a positive integer." });
+            }
+
+            // Cache-Key generation
+            string cacheKey = $"summary_{year}";
+
+            // 1. Check cache
+            var cachedData = await cacheService.GetCachedDataAsync(cacheKey);
+            if (cachedData != null)
+            {
+                return Ok(cachedData);
+            }
+
+            // 2. Calculate summary
+            var summary = await analysisService.GetYearSummaryAsync(year);
+
+            // 3. Save to cache
+            await cacheService.SaveToCacheAsync(cacheKey, summary);
+
+            // 4. Return data
+            return Ok(summary);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "An unexpected error occurred. Please try again later. " + ex.Message });
+        }
+    }
 
     // GET: api/chart/types
     [HttpGet("types")]
@@ -68,8 +105,8 @@ public class ChartController(AnalysisCalculator analysisService, CacheService ca
     {
         var types = new[]
         {
-            new { id = "successRate", name = "Erfolgsrate nach Mondphase" },
-            new { id = "launchesPerMonth", name = "Starts pro Monat" }
+            new ChartTypeResponse { ChartType = "successRate", Description = "Erfolgsrate nach Mondphase" },
+            new ChartTypeResponse { ChartType = "launchesPerMonth", Description = "Starts pro Monat" }
         };
 
         return Ok(types); // 200 OK

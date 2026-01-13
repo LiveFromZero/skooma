@@ -1,55 +1,78 @@
 import type { JSX } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useEffect, useState } from "react";
-import type { FilterData } from "../types";
-import type { RocketLaunchData } from "../types";
+import type { FilterData } from "../RequestModels/types";
+import { fetchChartData, fetchChartTypes } from "../Services/fetchData";
 const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
-function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
-  const [dataOfRocketLaunches, setDataOfRocketLaunches] = useState<
-    RocketLaunchData[]
-  >([
-    { countLaunches: 0, moonPhase: 1, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonPhase: 2, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonPhase: 3, countSuccessLaunches: 0 },
-    { countLaunches: 0, moonPhase: 4, countSuccessLaunches: 0 },
-  ]);
+interface ChartData {
+  label: string;
+  value: number;
+}
+
+interface ChartType {
+  id: string;
+  name: string;
+}
+
+function Graphic({
+  filterDaten,
+  setFilterDaten,
+}: {
+  filterDaten: FilterData;
+  setFilterDaten: (data: FilterData) => void;
+}): JSX.Element {
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [chartTypes, setChartTypes] = useState<ChartType[]>([]);
 
   useEffect(() => {
-    fetchData(filterDaten);
-  }, [filterDaten.year, filterDaten.rocketType]);
+    // Fetch available chart types on mount
+    fetchAvailableChartTypes();
+  }, []);
 
-  async function fetchData(filterDaten: FilterData): Promise<void> {
-    const response = await fetch(
-      `${API_URL}/rocket-starts/rocketlaunchdata?year=` +
-        filterDaten.year +
-        "&rocketType=" +
-        filterDaten.rocketType
-    );
-    console.log("Response status:", response.status);
-    const data = await response.json();
-    console.log("Fetched data:", data);
-    var fetchedData: RocketLaunchData[] = data;
-    setDataOfRocketLaunches(fetchedData);
+  useEffect(() => {
+    // Fetch chart data whenever filterDaten changes
+    fetchData(filterDaten);
+  }, [filterDaten]);
+
+  async function fetchAvailableChartTypes(): Promise<void> {
+    try {
+      const types = await fetchChartTypes(API_URL);
+      console.log("Fetched chart types:", types);
+      setChartTypes(types);
+
+      // Automatically set the first chart type in the filter if not already set
+      if (types.length > 0 && !filterDaten.chartType) {
+        setFilterDaten({ ...filterDaten, chartType: types[0].id });
+      }
+    } catch (error) {
+      console.error("Failed to fetch chart types:", error);
+    }
   }
 
-  const moonLabels = dataOfRocketLaunches.map((item) => {
-    const phases: Record<number, string> = {
-      1: "Neumond",
-      2: "Viertelmond",
-      3: "Halbmond",
-      4: "Vollmond",
-    };
-    return phases[item.moonPhase] || "Unbekannt";
-  });
+  async function fetchData(filterDaten: FilterData): Promise<void> {
+    try {
+      const data = await fetchChartData(
+        API_URL,
+        filterDaten.chartType,
+        filterDaten.year
+      );
+      console.log("Fetched chart data:", data);
 
-  const seriesDataAllLaunches: number[] = dataOfRocketLaunches.map(
-    (item) => item.countLaunches
-  );
+      // Transform the data to match the expected structure
+      const transformedData = data.map((item: any) => ({
+        label: item.name || item.label, // Use 'name' or fallback to 'label'
+        value: item.value,
+      }));
 
-  const seriesDataSuccessfulLaunches: number[] = dataOfRocketLaunches.map(
-    (item) => item.countSuccessLaunches
-  );
+      setChartData(transformedData);
+    } catch (error) {
+      console.error("Failed to fetch chart data:", error);
+    }
+  }
+
+  const labels = chartData.map((item) => item.label);
+  const values = chartData.map((item) => item.value);
 
   return (
     <div>
@@ -59,17 +82,13 @@ function Graphic({ filterDaten }: { filterDaten: FilterData }): JSX.Element {
         xAxis={[
           {
             scaleType: "band",
-            data: moonLabels,
+            data: labels,
           },
         ]}
         series={[
           {
-            data: seriesDataAllLaunches,
-            label: "Anzahl Starts",
-          },
-          {
-            data: seriesDataSuccessfulLaunches,
-            label: "Erfolgreiche Starts",
+            data: values,
+            label: "Chart Values",
           },
         ]}
         height={300}

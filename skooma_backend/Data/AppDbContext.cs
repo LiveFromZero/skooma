@@ -12,6 +12,7 @@ namespace skooma_backend.Data
         public DbSet<Launch> Launches { get; set; }
         public DbSet<MoonData> MoonData { get; set; }
 
+        public DbSet<Location> Locations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

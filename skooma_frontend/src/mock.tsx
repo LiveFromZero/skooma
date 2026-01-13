@@ -1,4 +1,4 @@
-import type { RocketLaunchData } from "./types";
+import type { RocketLaunchData } from "./RequestModels/types";
 
 // Dummy data for Filter.tsx
 export const dummyAllAveragePercentage = 76.5;

@@ -1,7 +1,7 @@
 import { useState, type JSX } from "react";
 import Graphic from "./filterDependantComponents/Graphic";
-import type { FilterData } from "./types";
-import type { FilterSelectProps } from "./types";
+import type { FilterData } from "./RequestModels/types";
+import type { FilterSelectProps } from "./RequestModels/types";
 import SummaryTextForGivenYear from "./filterDependantComponents/SummaryTextForGivenYear";
 
 const spanStyle: React.CSSProperties = {
@@ -32,7 +32,7 @@ function FilterSelect({
 function Filter(): JSX.Element {
   const [dynamicFilterData, setDynamicFilterData] = useState<FilterData>({
     year: "2020",
-    rocketType: "Type0",
+    chartType: "Type0",
   });
 
   const YEAR_OPTIONS = [
@@ -43,8 +43,8 @@ function Filter(): JSX.Element {
     { value: "2024", label: "2024" },
   ];
 
-  const ROCKET_OPTIONS = [
-    { value: "Type0", label: "Alle Typen" },
+  const CHART_OPTIONS = [
+    { value: "successRate", label: "Erfolgsrate nach Mondphase" },
     { value: "Type1", label: "Type 1" },
     { value: "Type2", label: "Type 2" },
     { value: "Type3", label: "Type 3" },
@@ -63,10 +63,10 @@ function Filter(): JSX.Element {
       <span style={spanStyle} />
       <FilterSelect
         label="Raketentyp wählen:"
-        value={dynamicFilterData.rocketType}
-        options={ROCKET_OPTIONS}
+        value={dynamicFilterData.chartType}
+        options={CHART_OPTIONS}
         onChange={(value: string) =>
-          setDynamicFilterData({ ...dynamicFilterData, rocketType: value })
+          setDynamicFilterData({ ...dynamicFilterData, chartType: value })
         }
       />
       <Graphic filterDaten={dynamicFilterData} />

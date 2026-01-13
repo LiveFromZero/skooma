@@ -12,9 +12,10 @@ public class LaunchFetch(HttpClient httpClient, ILogger<LaunchFetch> logger)
             logger.LogInformation("Fetching launches from {StartingDate} to {EndingDate}", startingDate, endingDate);
 
             List<Launch> launches = new List<Launch>();
+            Dictionary<int, Location> locationCache = new Dictionary<int, Location>();
+            
             var startDate = startingDate.ToString("yyyy-MM-dd");
             var endDate = endingDate.ToString("yyyy-MM-dd");
-
             var url = $"https://ll.thespacedevs.com/2.3.0/launches/?net__gte={startDate}&net__lte={endDate}&limit=100";
 
             JsonElement data;
@@ -24,36 +25,76 @@ public class LaunchFetch(HttpClient httpClient, ILogger<LaunchFetch> logger)
                 logger.LogInformation("Making API call to URL: {Url}", url);
 
                 var response = await httpClient.GetStringAsync(url);
-
                 data = JsonSerializer.Deserialize<JsonElement>(response);
 
                 var newlaunches = data.GetProperty("results").EnumerateArray()
-                    .Select(launch => new Launch
+                    .Select(launch =>
                     {
-                        Id = launch.GetProperty("id").GetString() ?? string.Empty,
-                        RocketName =
-                            launch.GetProperty("rocket").GetProperty("configuration").GetProperty("name").GetString() ??
-                            string.Empty,
-                        LaunchDate = launch.GetProperty("net").GetDateTimeOffset(),
-                        Location = new Location
+                        // Skip if critical data is missing
+                        if (!launch.TryGetProperty("pad", out var pad) || pad.ValueKind == JsonValueKind.Null ||
+                            !pad.TryGetProperty("location", out var locationElement) || locationElement.ValueKind == JsonValueKind.Null ||
+                            !locationElement.TryGetProperty("id", out var locationIdElement))
                         {
-                            Id = launch.GetProperty("pad").GetProperty("location").GetProperty("id").GetInt32(),
-                            CountryName =
-                                launch.GetProperty("pad").GetProperty("country").GetProperty("name").GetString() ??
-                                string.Empty,
-                            Latitude = launch.GetProperty("pad").GetProperty("latitude").GetDouble().ToString() ??
-                                       string.Empty,
-                            Longitude = launch.GetProperty("pad").GetProperty("longitude").GetDouble().ToString() ??
-                                        string.Empty,
-                        },
-                        Status = launch.GetProperty("status").GetProperty("abbrev").GetString() ?? "Unknown"
+                            return null;
+                        }
+                        
+                        var locationId = locationIdElement.GetInt32();
+                        
+                        // Use cached location or create new one
+                        if (!locationCache.ContainsKey(locationId))
+                        {
+                            var countryName = string.Empty;
+                            if (pad.TryGetProperty("country", out var country) && country.ValueKind != JsonValueKind.Null)
+                            {
+                                countryName = country.GetProperty("name").GetString() ?? string.Empty;
+                            }
+                            
+                            locationCache[locationId] = new Location
+                            {
+                                Id = locationId,
+                                CountryName = countryName,
+                                Latitude = pad.TryGetProperty("latitude", out var lat) && lat.ValueKind != JsonValueKind.Null 
+                                    ? lat.GetDouble().ToString() 
+                                    : string.Empty,
+                                Longitude = pad.TryGetProperty("longitude", out var lon) && lon.ValueKind != JsonValueKind.Null 
+                                    ? lon.GetDouble().ToString() 
+                                    : string.Empty
+                            };
+                        }
+                        
+                        var rocketName = string.Empty;
+                        if (launch.TryGetProperty("rocket", out var rocket) && rocket.ValueKind != JsonValueKind.Null &&
+                            rocket.TryGetProperty("configuration", out var config) && config.ValueKind != JsonValueKind.Null)
+                        {
+                            rocketName = config.GetProperty("name").GetString() ?? string.Empty;
+                        }
+                        
+                        var status = "Unknown";
+                        if (launch.TryGetProperty("status", out var statusObj) && statusObj.ValueKind != JsonValueKind.Null)
+                        {
+                            status = statusObj.GetProperty("abbrev").GetString() ?? "Unknown";
+                        }
+                        
+                        return new Launch
+                        {
+                            Id = launch.GetProperty("id").GetString() ?? string.Empty,
+                            RocketName = rocketName,
+                            LaunchDate = launch.GetProperty("net").GetDateTimeOffset(),
+                            Location = locationCache[locationId],
+                            Status = status
+                        };
                     })
-                    .ToList();
+                    .Where(l => l != null)
+                    .ToList()!;
 
                 launches.AddRange(newlaunches);
 
-                url = data.GetProperty("next").GetString() ?? string.Empty;
+                url = data.TryGetProperty("next", out var next) && next.ValueKind != JsonValueKind.Null 
+                    ? next.GetString() ?? string.Empty 
+                    : string.Empty;
+                    
                 logger.LogInformation("Next URL: {NextUrl}", url);
+                
             } while (!string.IsNullOrEmpty(url));
 
             logger.LogInformation("Successfully fetched {LaunchCount} launches", launches.Count);
@@ -76,19 +117,10 @@ public class LaunchFetch(HttpClient httpClient, ILogger<LaunchFetch> logger)
         }
     }
     
-    
     public async Task<List<Launch>> GetLaunchesByYearAsync(int year)
     {
         var startingDate = new DateTime(year, 1, 1);
         var endingDate = new DateTime(year, 12, 31);
         return await GetLaunchesFromTimeframeAsync(startingDate, endingDate);
-    }
-    
-    private void SaveLaunchesToDatabase(List<Launch> launches)
-    {
-        // TODO:
-        // remove return statement when implemented
-        // Placeholder for database saving logic
-        logger.LogInformation("Saving {LaunchCount} launches to the database", launches.Count);
     }
 }

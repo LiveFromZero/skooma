@@ -22,7 +22,7 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
                 .Select(phase => new MoonData
                 {
                     Phase = MapPhaseStringToEnum(phase.GetProperty("phase").GetString() ?? string.Empty),
-                    Date = new DateTime(
+                    MoonDate = new DateTime(
                         phase.GetProperty("year").GetInt32(),
                         phase.GetProperty("month").GetInt32(),
                         phase.GetProperty("day").GetInt32())
@@ -68,7 +68,7 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
             var moonPhase = new MoonData
             {
                 Phase = MapPhaseStringToEnum(properties.GetProperty("curphase").GetString() ?? string.Empty),
-                Date = date
+                MoonDate = date
             };
 
             logger.LogInformation("Successfully fetched moon phase: {PhaseName}", moonPhase.Phase.ToString());
@@ -98,7 +98,7 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
         // Placeholder for database saving logic
         foreach (var data in moonData)
         {
-            logger.LogInformation("Saving moon data to database: {PhaseName} on {Date}", data.Phase.ToString(), data.Date);
+            logger.LogInformation("Saving moon data to database: {PhaseName} on {Date}", data.Phase.ToString(), data.MoonDate);
         }
         
             
