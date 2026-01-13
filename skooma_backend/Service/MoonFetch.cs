@@ -18,7 +18,7 @@ public class MoonFetch(HttpClient httpClient, ILogger<MoonFetch> logger)
             var response = await httpClient.GetStringAsync(url);
             var data = JsonSerializer.Deserialize<JsonElement>(response);
 
-            var phases = data.GetProperty("phasedata").EnumerateArray()
+            List<MoonData> phases = data.GetProperty("phasedata").EnumerateArray()
                 .Select(phase => new MoonData
                 {
                     Phase = MapPhaseStringToEnum(phase.GetProperty("phase").GetString() ?? string.Empty),
