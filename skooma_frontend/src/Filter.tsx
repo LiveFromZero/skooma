@@ -1,8 +1,10 @@
 import { useState, type JSX } from "react";
 import Graphic from "./filterDependantComponents/Graphic";
-import type { FilterData } from "./types";
+import type { DynamicFilterType, FilterData } from "./types";
 import type { FilterSelectProps } from "./types";
 import SummaryTextForGivenYear from "./filterDependantComponents/SummaryTextForGivenYear";
+import { useEffect } from "react";
+const API_URL = import.meta.env.VITE_API_URL_BACKEND;
 
 const spanStyle: React.CSSProperties = {
   paddingLeft: 10,
@@ -35,27 +37,48 @@ function Filter(): JSX.Element {
     rocketType: "Type0",
   });
 
-  const YEAR_OPTIONS = [
-    { value: "2020", label: "2020" },
-    { value: "2021", label: "2021" },
-    { value: "2022", label: "2022" },
-    { value: "2023", label: "2023" },
-    { value: "2024", label: "2024" },
-  ];
+  const [dynamicFilterOptions, setDynamicFilterOptions] =
+    useState<DynamicFilterType>({
+      yearOptions: [
+        { value: "2020", label: "2020" },
+        { value: "2021", label: "2021" },
+      ],
+      rocketTypeOptions: [
+        { value: "Type0", label: "Alle Typen" },
+        { value: "Type1", label: "Type 1" },
+      ],
+    });
 
-  const ROCKET_OPTIONS = [
-    { value: "Type0", label: "Alle Typen" },
-    { value: "Type1", label: "Type 1" },
-    { value: "Type2", label: "Type 2" },
-    { value: "Type3", label: "Type 3" },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function fetchData(): Promise<void> {
+    const response = await fetch(`${API_URL}/rocket-starts/rocketfilterdata`);
+    console.log("Response status:", response.status);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    var fetchedData: DynamicFilterType = data;
+    setDynamicFilterOptions(fetchedData);
+  }
+
+  async function updateDatabase(): Promise<void> {
+    const response = await fetch(`${API_URL}/rocket-starts/updateBackend`, {});
+    console.log("Response status:", response.status);
+    alert("Datenbank wurde aktualisiert!");
+    window.location.reload();
+  }
 
   return (
     <div>
+      <div>
+        <button onClick={() => updateDatabase()}>Update Database</button>
+      </div>
+      <span style={spanStyle} />
       <FilterSelect
         label="Startjahr wählen:"
         value={dynamicFilterData.year}
-        options={YEAR_OPTIONS}
+        options={dynamicFilterOptions.yearOptions}
         onChange={(value: string) =>
           setDynamicFilterData({ ...dynamicFilterData, year: value })
         }
@@ -64,7 +87,7 @@ function Filter(): JSX.Element {
       <FilterSelect
         label="Raketentyp wählen:"
         value={dynamicFilterData.rocketType}
-        options={ROCKET_OPTIONS}
+        options={dynamicFilterOptions.rocketTypeOptions}
         onChange={(value: string) =>
           setDynamicFilterData({ ...dynamicFilterData, rocketType: value })
         }
